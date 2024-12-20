@@ -1,15 +1,41 @@
+import React, { useEffect, useState } from "react";
+import authService from "./appwrite/auth";
+import { useDispatch } from "react-redux";
+import { loging, logout } from "./store/authSlice.js";
+import Header from "./components/Header/Header.jsx";
+import Footer from "./components/Footer/Footer.jsx";
 
-
-import React from 'react'
 
 const App = () => {
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
-  // console.log(import.meta.env.VITE_APPWRITE_PROJECT_ID);
-  // console.log(import.meta.env.VITE_APPWRITE_COLLECTION_ID);
+  useEffect(() => {
+    authService
+      .getUserAccount((userData) => {
+        if (userData) {
+          dispatch(loging(userData));
+        } else {
+          dispatch(logout());
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  return (
-    <div>App</div>
-  )
-}
+  return !loading ? (
+    <div className="min-h-screen flex flex-wrap content-between bg-gray-400">
+      <div className="w-full block">
+        <Header />
+        <main>
+          {/* TODO: <Outlet /> */}
+        </main>
+        <Footer />
+      </div>
+    </div>
+  ) : null;
+};
 
-export default App
+export default App;
+
+
+
